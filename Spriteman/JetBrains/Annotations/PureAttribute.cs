@@ -2,8 +2,8 @@
 
 namespace JetBrains.Annotations
 {
-	[AttributeUsage(AttributeTargets.Method, Inherited = true)]
-	internal sealed class PureAttribute : Attribute
-	{
-	}
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
+    internal sealed class PureAttribute : Attribute
+    {
+    }
 }
