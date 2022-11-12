@@ -188,7 +188,7 @@ namespace Spriteman
         }
         private void LoadSpriteSheet(string filename)
         {
-            if (Path.GetExtension(filename) == ".dat")
+            if (Path.GetExtension(filename) == ".dat" || Path.GetExtension(filename) == ".mtdat" )
             {
                 try
                 {

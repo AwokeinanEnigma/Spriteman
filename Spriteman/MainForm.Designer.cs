@@ -227,7 +227,7 @@ namespace Spriteman
             this.openImageDialog.Filter = "All supported files|*.dat;*.bmp;*.png|Sprite files|*.dat|Image files|*.bmp;*.png|" +
     "All files|*.*";
             this.openImageDialog.Title = "Open Image";
-            this.saveImageDialog.Filter = "Mother 4 sprite|*.dat";
+            this.saveImageDialog.Filter = "Violet Sprite|*.dat";
             this.saveImageDialog.Title = "Save Image";
             this.importImageDialog.Filter = "Image files|*.bmp;*.png";
             this.importImageDialog.Title = "Import Image";
