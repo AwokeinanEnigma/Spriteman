@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Spriteman
@@ -649,10 +651,7 @@ namespace Spriteman
 
         public void LoadENUS(string filename)
         {
-            List<string> everything = new List<string>
-            {
-                "------- START -------"
-            };
+            List<string> everything = new List<string>();
             NbtCompound rootTag = new NbtFile(filename).RootTag;
             foreach (NbtTag thing in rootTag.Tags)
             {
@@ -660,15 +659,27 @@ namespace Spriteman
                 foreach (NbtString stringo in compound)
                 {
                     everything.Add($"------- START ENTRY[{stringo.Path}] -------");
-                    everything.Add(stringo.Value);
+                    everything.Add(remove_empty_lines(stringo.Value));
                     everything.Add("------- ENTRY END -------");
 
                 }
             }
-            File.WriteAllLines($"en_us{new Random().Next(0, 400)}.txt", everything.ToArray());
+            string fileName = Path.GetFileName(filename);
+            File.WriteAllLines($"en_us_{File.GetCreationTime(fileName)}.txt", everything.ToArray());
 
         }
-
+        private string remove_empty_lines(string text)
+        {
+            StringBuilder text_sb = new StringBuilder(text);
+            Regex rg_spaces = new Regex(@"(\r\n|\r|\n)([\s]+\r\n|[\s]+\r|[\s]+\n)");
+            Match m = rg_spaces.Match(text_sb.ToString());
+            while (m.Success)
+            {
+                text_sb = text_sb.Replace(m.Groups[2].Value, "");
+                m = rg_spaces.Match(text_sb.ToString());
+            }
+            return text_sb.ToString().Trim();
+        }
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             if (this.openImageDialog.ShowDialog(this) == DialogResult.OK)
