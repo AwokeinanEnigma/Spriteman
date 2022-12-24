@@ -20,11 +20,14 @@ namespace Spriteman
         }
         private void PaletteDialog_Load(object sender, EventArgs e)
         {
+            // the active palette isn't reset when you load a new .dat file
+
+
             if (this.palettes != null && this.palettes.Count > 0)
             {
                 this.PopulatePanel(this.palettes[0], true);
                 this.paletteBox.Maximum = this.palettes.Count - 1;
-                this.paletteBox.Value = this.activePalette;
+                this.paletteBox.Value = Math.Min(this.paletteBox.Maximum, this.activePalette);
                 this.toolTip.SetToolTip(this.paletteLabel, string.Format("{0} colors", this.palettes[0].Count));
             }
         }

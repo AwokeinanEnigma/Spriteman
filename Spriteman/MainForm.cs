@@ -200,7 +200,6 @@ namespace Spriteman
                     this.sheetBox.Size = this.image.Size;
                     this.workingFileName = filename;
                     this.isLoaded = true;
-                    this.image.Save(filename + ".png");
                     return;
                 }
                 catch (Exception ex)
