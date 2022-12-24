@@ -200,6 +200,7 @@ namespace Spriteman
                     this.sheetBox.Size = this.image.Size;
                     this.workingFileName = filename;
                     this.isLoaded = true;
+                    this.Text = $"Spriteman: { Path.GetFileName( filename )}";
                     return;
                 }
                 catch (Exception ex)
@@ -372,7 +373,7 @@ namespace Spriteman
 
         private void InitializePalette()
         {
-            List<Color> list = new List<Color>();
+            List<Color> colorsInImage = new List<Color>();
             this.indices = new byte[this.image.Width * this.image.Height];
             for (int i = 0; i < this.image.Width; i++)
             {
@@ -380,23 +381,23 @@ namespace Spriteman
                 {
                     Color pixel = this.image.GetPixel(i, j);
                     byte b;
-                    if (!list.Contains(pixel))
+                    if (!colorsInImage.Contains(pixel))
                     {
-                        b = (byte)list.Count;
-                        list.Add(pixel);
+                        b = (byte)colorsInImage.Count;
+                        colorsInImage.Add(pixel);
                     }
                     else
                     {
-                        b = (byte)list.IndexOf(pixel);
+                        b = (byte)colorsInImage.IndexOf(pixel);
                     }
                     this.indices[j * this.image.Width + i] = b;
-                    if (list.Count > 256)
+                    if (colorsInImage.Count > 256)
                     {
                         throw new IndexOutOfRangeException("The number of colors in the palette has exceeded 256.");
                     }
                 }
             }
-            this.palettes.Add(list);
+            this.palettes.Add(colorsInImage);
             this.activePalette = 0;
         }
         private void SaveSpriteSheet(string filename)
@@ -412,28 +413,29 @@ namespace Spriteman
             }
             NbtFile nbtFile = new NbtFile();
             NbtCompound rootTag = nbtFile.RootTag;
-            NbtInt newTag = new NbtInt("w", this.image.Width);
-            rootTag.Add(newTag);
-            NbtCompound nbtCompound = new NbtCompound("pal");
-            rootTag.Add(nbtCompound);
+            NbtInt widthTag = new NbtInt("w", this.image.Width);
+            rootTag.Add(widthTag);
+            NbtCompound paletteCompound = new NbtCompound("pal");
+            rootTag.Add(paletteCompound);
             for (int i = 0; i < this.palettes.Count; i++)
             {
-                List<Color> list = this.palettes[i];
-                int[] array = new int[list.Count];
-                for (int j = 0; j < list.Count; j++)
+                List<Color> allPalettes = this.palettes[i];
+                int[] paletteColors = new int[allPalettes.Count];
+                for (int j = 0; j < allPalettes.Count; j++)
                 {
-                    array[j] = list[j].ToArgb();
+                    paletteColors[j] = allPalettes[j].ToArgb();
                 }
-                NbtIntArray newTag2 = new NbtIntArray(string.Format("{0}", i), array);
-                nbtCompound.Add(newTag2);
+
+                NbtIntArray paletteArray = new NbtIntArray(string.Format("{0}", i), paletteColors);
+                paletteCompound.Add(paletteArray);
             }
-            NbtByteArray newTag3 = new NbtByteArray("img", this.indices);
-            rootTag.Add(newTag3);
-            NbtCompound nbtCompound2 = new NbtCompound("spr");
+            NbtByteArray imageTag = new NbtByteArray("img", this.indices);
+            rootTag.Add(imageTag);
+            NbtCompound spritesCompound = new NbtCompound("spr");
             foreach (object obj in this.spriteList.Items)
             {
                 Sprite sprite = (Sprite)((ListViewItem)obj).Tag;
-                NbtCompound nbtCompound3 = new NbtCompound(sprite.Name)
+                NbtCompound spriteDefinitionCompound = new NbtCompound(sprite.Name)
                 {
                     new NbtIntArray("crd", new int[]
                 {
@@ -457,16 +459,16 @@ namespace Spriteman
                 {
                     array2[k] = new NbtFloat(sprite.SpeedSet[k]);
                 }
-                nbtCompound3.Add(new NbtList("spd", array2, NbtTagType.Float));
-                nbtCompound3.Add(new NbtByteArray("opt", new byte[]
+                spriteDefinitionCompound.Add(new NbtList("spd", array2, NbtTagType.Float));
+                spriteDefinitionCompound.Add(new NbtByteArray("opt", new byte[]
                 {
                     sprite.FlipX ? (byte)1 : (byte)0,
                     sprite.FlipY ? (byte)1 : (byte)0,
                     (byte)sprite.Mode
                 }));
-                nbtCompound2.Add(nbtCompound3);
+                spritesCompound.Add(spriteDefinitionCompound);
             }
-            rootTag.Add(nbtCompound2);
+            rootTag.Add(spritesCompound);
             nbtFile.SaveToFile(filename, NbtCompression.GZip);
         }
         private void ValidateSaveData()
