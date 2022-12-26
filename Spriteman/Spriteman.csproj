@@ -101,7 +101,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="SpriteEditDialog.resources" />
+    <EmbeddedResource Include="SpriteEditDialog.resx">
+      <DependentUpon>SpriteEditDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />

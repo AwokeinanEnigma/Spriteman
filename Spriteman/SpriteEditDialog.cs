@@ -1,6 +1,7 @@
 ﻿using Spriteman.Properties;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -231,17 +232,28 @@ namespace Spriteman
                 Rectangle srcRect = new Rectangle(location, this.sprite.Bounds);
                 Rectangle destRect = new Rectangle(0, 0, srcRect.Width, srcRect.Height);
                 graphics.TranslateTransform(this.previewBox.Width / 2, this.previewBox.Height / 2);
-                if (this.showGuides)
+
+                Pen width = new Pen(Color.Black);
+                width.Width = 1;
+
+                if (showGuides)
                 {
-                    graphics.DrawLine(Pens.Black, -500, 0, 500, 0);
-                    graphics.DrawLine(Pens.Black, 0, -500, 0, 500);
+                    graphics.DrawLine(width, -500, 0, 500, 0);
+                    graphics.DrawLine(width, 0, -500, 0, 500);
                 }
+
                 if (this.showShadow)
                 {
                     graphics.DrawImage(Resources.shadow, -8, -1);
                 }
+
+//                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                graphics.SmoothingMode = SmoothingMode.None;
+
                 graphics.ScaleTransform(this.sprite.FlipX ? -1 : 1, this.sprite.FlipY ? -1 : 1);
                 graphics.TranslateTransform(-sprite.Origin.X, -sprite.Origin.Y);
+              //  graphics.ScaleTransform(this.sprite.FlipX ? -2 : 2, this.sprite.FlipY ? -2 : 2);
                 graphics.DrawImage(this.sheet, destRect, srcRect, GraphicsUnit.Pixel);
             }
         }
@@ -311,5 +323,12 @@ namespace Spriteman
             0,
             2
         };
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.showGuides = !this.showGuides;
+            this.showGuidesItem.Checked = this.showGuides;
+            this.previewBox.Refresh();
+        }
     }
 }
